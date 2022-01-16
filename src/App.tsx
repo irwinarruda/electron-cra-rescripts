@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+
+import { SaveFileService } from "./services/SaveFileService";
+
+import "./styles/global.css";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [codeValues, setCodeValues] = React.useState<string>("");
+    const handleFileSave = async () => {
+        try {
+            const saveFileService = new SaveFileService();
+            await saveFileService.saveFile({ file: codeValues });
+        } catch (err) {
+            console.log("err", { ...(err as any) });
+        }
+    };
+
+    return (
+        <div className="app">
+            <CodeMirror
+                value={codeValues}
+                theme="dark"
+                minHeight="90vh"
+                extensions={[javascript({ jsx: true, typescript: true })]}
+                onChange={(value) => {
+                    setCodeValues(value);
+                }}
+            />
+            <button className="btn" onClick={handleFileSave}>
+                Salvar arquivo
+            </button>
+        </div>
+    );
 }
 
 export default App;
